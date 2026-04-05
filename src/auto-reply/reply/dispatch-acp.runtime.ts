@@ -21,7 +21,7 @@ function loadDispatchAcpCommandBypass() {
 
 export async function shouldBypassAcpDispatchForCommand(
   ...args: Parameters<ShouldBypassAcpDispatchForCommand>
-): Promise<ReturnType<ShouldBypassAcpDispatchForCommand>> {
+): Promise<Awaited<ReturnType<ShouldBypassAcpDispatchForCommand>>> {
   const mod = await loadDispatchAcpCommandBypass();
   return mod.shouldBypassAcpDispatchForCommand(...args);
 }
