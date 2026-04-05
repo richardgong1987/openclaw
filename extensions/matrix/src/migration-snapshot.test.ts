@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { withTempHome } from "../../../test/helpers/temp-home.js";
 import { detectLegacyMatrixCrypto } from "./legacy-crypto.js";
 import {
@@ -10,6 +10,33 @@ import {
   resolveMatrixMigrationSnapshotOutputDir,
 } from "./migration-snapshot.js";
 import { resolveMatrixAccountStorageRoot } from "./storage-paths.js";
+
+const createBackupArchiveMock = vi.hoisted(() =>
+  vi.fn(async (params?: { output?: string }) => {
+    const outputDir = params?.output ?? "/tmp";
+    const archivePath = path.join(outputDir, "matrix-migration-snapshot.tar.gz");
+    fs.mkdirSync(outputDir, { recursive: true });
+    fs.writeFileSync(archivePath, "archive\n", "utf8");
+    return {
+      createdAt: "2026-04-05T00:00:00.000Z",
+      archiveRoot: "openclaw-backup-2026-04-05",
+      archivePath,
+      dryRun: false,
+      includeWorkspace: false,
+      onlyConfig: false,
+      verified: false,
+      assets: [],
+      skipped: [],
+    };
+  }),
+);
+
+vi.mock("openclaw/plugin-sdk/runtime", () => {
+  return {
+    createBackupArchive: (params?: { output?: string; includeWorkspace?: boolean }) =>
+      createBackupArchiveMock(params),
+  };
+});
 
 describe("matrix migration snapshots", () => {
   it("creates a backup marker after writing a pre-migration snapshot", async () => {
@@ -21,9 +48,12 @@ describe("matrix migration snapshots", () => {
 
       expect(result.created).toBe(true);
       expect(result.markerPath).toBe(resolveMatrixMigrationSnapshotMarkerPath(process.env));
-      expect(
-        result.archivePath.startsWith(resolveMatrixMigrationSnapshotOutputDir(process.env)),
-      ).toBe(true);
+      expect(createBackupArchiveMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          output: resolveMatrixMigrationSnapshotOutputDir(process.env),
+          includeWorkspace: false,
+        }),
+      );
       expect(fs.existsSync(result.archivePath)).toBe(true);
     });
   });

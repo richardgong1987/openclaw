@@ -96,7 +96,7 @@ export function moveSingleMatrixAccountConfigToNamedAccount(cfg: CoreConfig): Co
 
   const targetAccountId = resolveSingleAccountPromotionTarget({ channel: base });
 
-  const nextAccount: Record<string, unknown> = { ...(accounts[targetAccountId] ?? {}) };
+  const nextAccount: Record<string, unknown> = { ...accounts[targetAccountId] };
   for (const key of keysToMove) {
     nextAccount[key] = cloneIfObject(base[key]);
   }

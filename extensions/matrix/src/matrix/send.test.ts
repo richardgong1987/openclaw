@@ -424,9 +424,13 @@ describe("sendMessageMatrix mentions", () => {
       body: "hello @alice:example.org",
       "m.mentions": { user_ids: ["@alice:example.org"] },
     });
-    expect(
-      (sendMessage.mock.calls[0]?.[1] as { formatted_body?: string }).formatted_body,
-    ).toContain('href="https://matrix.to/#/%40alice%3Aexample.org"');
+    const firstCall = sendMessage.mock.calls[0];
+    if (!firstCall) {
+      throw new Error("expected sendMessage call");
+    }
+    expect((firstCall[1] as { formatted_body?: string }).formatted_body).toContain(
+      'href="https://matrix.to/#/%40alice%3Aexample.org"',
+    );
   });
 
   it("keeps bare localpart text as plain text", async () => {
@@ -439,9 +443,13 @@ describe("sendMessageMatrix mentions", () => {
     expect(sendMessage.mock.calls[0]?.[1]).toMatchObject({
       "m.mentions": {},
     });
-    expect(
-      (sendMessage.mock.calls[0]?.[1] as { formatted_body?: string }).formatted_body,
-    ).not.toContain("matrix.to/#/@alice:example.org");
+    const firstCall = sendMessage.mock.calls[0];
+    if (!firstCall) {
+      throw new Error("expected sendMessage call");
+    }
+    expect((firstCall[1] as { formatted_body?: string }).formatted_body).not.toContain(
+      "matrix.to/#/@alice:example.org",
+    );
   });
 
   it("does not emit mentions for escaped qualified users", async () => {
@@ -454,9 +462,13 @@ describe("sendMessageMatrix mentions", () => {
     expect(sendMessage.mock.calls[0]?.[1]).toMatchObject({
       "m.mentions": {},
     });
-    expect(
-      (sendMessage.mock.calls[0]?.[1] as { formatted_body?: string }).formatted_body,
-    ).not.toContain("matrix.to/#/@alice:example.org");
+    const firstCall = sendMessage.mock.calls[0];
+    if (!firstCall) {
+      throw new Error("expected sendMessage call");
+    }
+    expect((firstCall[1] as { formatted_body?: string }).formatted_body).not.toContain(
+      "matrix.to/#/@alice:example.org",
+    );
   });
 
   it("does not emit mentions for escaped room mentions", async () => {
@@ -514,9 +526,11 @@ describe("sendMessageMatrix mentions", () => {
       body: "@room.png",
       "m.mentions": {},
     });
-    expect(
-      (sendMessage.mock.calls[0]?.[1] as { formatted_body?: string }).formatted_body,
-    ).toBeUndefined();
+    const firstCall = sendMessage.mock.calls[0];
+    if (!firstCall) {
+      throw new Error("expected sendMessage call");
+    }
+    expect((firstCall[1] as { formatted_body?: string }).formatted_body).toBeUndefined();
   });
 });
 
