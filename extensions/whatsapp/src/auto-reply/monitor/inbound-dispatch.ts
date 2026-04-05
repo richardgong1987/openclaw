@@ -101,7 +101,7 @@ export function buildWhatsAppInboundContext(params: {
         }))
       : undefined;
 
-  return finalizeInboundContext({
+  const result = finalizeInboundContext({
     Body: params.combinedBody,
     BodyForAgent: params.msg.body,
     InboundHistory: inboundHistory,
@@ -132,12 +132,20 @@ export function buildWhatsAppInboundContext(params: {
     SenderE164: params.sender.e164,
     CommandAuthorized: params.commandAuthorized,
     WasMentioned: params.msg.wasMentioned,
+    WasQueued: params.msg.wasQueued,
     ...(params.msg.location ? toLocationContext(params.msg.location) : {}),
     Provider: "whatsapp",
     Surface: "whatsapp",
     OriginatingChannel: "whatsapp",
     OriginatingTo: params.msg.from,
   });
+  console.log(
+    "[auto-trace] inbound context: WasQueued:",
+    result.WasQueued,
+    "MessageSid:",
+    result.MessageSid,
+  );
+  return result;
 }
 
 export function resolveWhatsAppDmRouteTarget(params: {

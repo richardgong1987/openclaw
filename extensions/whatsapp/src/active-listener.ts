@@ -3,6 +3,7 @@ import type { PollInput } from "openclaw/plugin-sdk/media-runtime";
 import { DEFAULT_ACCOUNT_ID } from "openclaw/plugin-sdk/routing";
 
 export type ActiveWebSendOptions = {
+  quotedMessageKey?: { id: string; remoteJid: string; fromMe: boolean; participant?: string };
   gifPlayback?: boolean;
   accountId?: string;
   fileName?: string;
