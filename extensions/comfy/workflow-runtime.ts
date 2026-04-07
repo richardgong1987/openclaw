@@ -19,6 +19,7 @@ import {
 } from "openclaw/plugin-sdk/ssrf-runtime";
 import {
   isRecord,
+  normalizeOptionalLowercaseString,
   normalizeOptionalString,
   resolveUserPath,
 } from "openclaw/plugin-sdk/text-runtime";
@@ -225,7 +226,7 @@ function resolveComfyNetworkPolicy(params: {
     return {};
   }
 
-  const hostname = normalizeOptionalString(parsed.hostname)?.toLowerCase() ?? "";
+  const hostname = normalizeOptionalLowercaseString(parsed.hostname) ?? "";
   if (!hostname || !params.allowPrivateNetwork || !isPrivateOrLoopbackHost(hostname)) {
     return {};
   }
@@ -263,7 +264,7 @@ async function readJsonResponse<T>(params: {
 }
 
 function inferFileExtension(params: { fileName?: string; mimeType?: string }): string {
-  const normalizedMime = params.mimeType?.toLowerCase().trim();
+  const normalizedMime = normalizeOptionalLowercaseString(params.mimeType);
   if (normalizedMime?.includes("jpeg")) {
     return "jpg";
   }
