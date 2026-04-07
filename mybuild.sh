@@ -1,3 +1,4 @@
+git pull origin main
 git pull office main
 
 pnpm install
