@@ -7,5 +7,6 @@ pnpm build
 
 pnpm ui:build
 
+openclaw gateway restart
 launchctl stop ai.openclaw.gateway && launchctl start ai.openclaw.gateway
 
